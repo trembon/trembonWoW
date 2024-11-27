@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using trembonWoW.Core.Connectors.Auth;
 
-namespace trembonWoW.Authentication
+namespace trembonWoW.Core.Authentication
 {
-    public class WoWUserStore : IUserStore<WoWUser>,
-                                    IUserEmailStore<WoWUser>,
-                                    IUserPasswordStore<WoWUser>,
-                                    IPasswordValidator<WoWUser>
+    public class WoWUserStore(IAuthDatabase authDatabase) : IUserStore<WoWUser>, IUserEmailStore<WoWUser>, IUserPasswordStore<WoWUser>
     {
         public Task<IdentityResult> CreateAsync(WoWUser user, CancellationToken cancellationToken)
         {
@@ -17,28 +15,32 @@ namespace trembonWoW.Authentication
             throw new NotImplementedException();
         }
 
-        public void Dispose()
-        {
-        }
-
         public Task<WoWUser?> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public Task<WoWUser?> FindByIdAsync(string userId, CancellationToken cancellationToken)
+        public async Task<WoWUser?> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var account = await authDatabase.GetAccountById(userId);
+            if (account == null)
+                return null;
+
+            return new WoWUser(account);
         }
 
-        public Task<WoWUser?> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
+        public async Task<WoWUser?> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
-            return Task.FromResult(new WoWUser() { UserName = normalizedUserName.ToLower(), PasswordHash = "cGFzc3dvcmQ=" });
+            var account = await authDatabase.GetAccount(normalizedUserName);
+            if (account == null)
+                return null;
+
+            return new WoWUser(account);
         }
 
         public Task<string?> GetEmailAsync(WoWUser user, CancellationToken cancellationToken)
         {
-            return Task.FromResult<string?>(null);
+            return Task.FromResult(user.Email);
         }
 
         public Task<bool> GetEmailConfirmedAsync(WoWUser user, CancellationToken cancellationToken)
@@ -48,12 +50,12 @@ namespace trembonWoW.Authentication
 
         public Task<string?> GetNormalizedEmailAsync(WoWUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.NormalizedEmail);
         }
 
         public Task<string?> GetNormalizedUserNameAsync(WoWUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.NormalizedUserName);
         }
 
         public Task<string?> GetPasswordHashAsync(WoWUser user, CancellationToken cancellationToken)
@@ -73,7 +75,7 @@ namespace trembonWoW.Authentication
 
         public Task<bool> HasPasswordAsync(WoWUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(!string.IsNullOrWhiteSpace(user.PasswordHash));
         }
 
         public Task SetEmailAsync(WoWUser user, string? email, CancellationToken cancellationToken)
@@ -111,9 +113,29 @@ namespace trembonWoW.Authentication
             throw new NotImplementedException();
         }
 
-        public Task<IdentityResult> ValidateAsync(UserManager<WoWUser> manager, WoWUser user, string? password)
+        #region IDisposable
+
+        private bool disposedValue;
+
+        protected virtual void Dispose(bool disposing)
         {
-            throw new NotImplementedException();
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                }
+
+                disposedValue = true;
+            }
         }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion IDisposable
     }
 }

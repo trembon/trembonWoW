@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MudBlazor.Services;
 using MySqlConnector;
-using trembonWoW.Authentication;
+using trembonWoW.Core.Authentication;
 using trembonWoW.Client.Pages;
 using trembonWoW.Components;
 using trembonWoW.Core.Connectors.Auth;
@@ -35,7 +35,7 @@ builder.Services.AddIdentityCore<WoWUser>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-builder.Services.AddSingleton<IUserStore<WoWUser>, WoWUserStore>();
+builder.Services.AddTransient<IUserStore<WoWUser>, WoWUserStore>();
 builder.Services.AddSingleton<IPasswordHasher<WoWUser>, WoWPasswordHasher>();
 
 var app = builder.Build();
