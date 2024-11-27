@@ -1,0 +1,60 @@
+﻿@attribute [AllowAnonymous]
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+@using trembonWoW.Authentication
+@page "/account/login"
+
+@inject NavigationManager NavManager
+@inject SignInManager<WoWUser> signInManager
+
+<MudContainer Class="mt-16" MaxWidth="MaxWidth.Medium">
+    <MudText Align="Align.Center" GutterBottom="true">
+        <MudImage Height="250" Src="/images/world-of-warcraft-wrath-of-the-lich-king-logo.png" Alt="World of Warcraft: Wrath of the Lich King"></MudImage>
+    </MudText>
+    <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">trembon's WoW</MudText>
+    <EditForm Model="@model" method="post" OnValidSubmit="LoginForm" FormName="login">
+        <MudGrid>
+            <MudItem xs="12">
+                <MudTextField Label="Username" For="(() => model.Username)" @bind-Value="model.Username" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudTextField Label="Password" For="(() => model.Password)" @bind-Value="model.Password" InputType="InputType.Password" />
+            </MudItem>
+            <MudItem xs="6" Class="d-flex justify-center">
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Size="Size.Large" Class="mt-8">Login</MudButton>
+            </MudItem>
+            <MudItem xs="6" Class="d-flex justify-center">
+                <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Secondary" Size="Size.Large" Class="mt-8">Register</MudButton>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+</MudContainer>
+
+@code {
+    private InputModel model { get; set; } = new();
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    public async Task LoginForm()
+    {
+        var result = await signInManager.PasswordSignInAsync(model.Username, model.Password, true, false);
+        if (result.Succeeded)
+        {
+            NavManager.NavigateTo(ReturnUrl ?? "/");
+        }
+        else
+        {
+            // TODO: show error
+        }
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        public string Username { get; set; } = "";
+
+        [Required]
+        public string Password { get; set; } = "";
+    }
+}
