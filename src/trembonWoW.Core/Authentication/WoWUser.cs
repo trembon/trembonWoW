@@ -10,7 +10,7 @@ namespace trembonWoW.Core.Authentication
 
         public WoWUser(Account account)
         {
-            Id = account.Id;
+            Id = account.Id.ToString();
             UserName = account.Username.ToLowerInvariant();
             NormalizedUserName = account.Username.ToUpperInvariant();
             Email = account.Email?.ToLowerInvariant();

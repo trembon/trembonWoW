@@ -21,7 +21,18 @@
                 <MudTextField Label="Password" For="@(() => model.Password)" @bind-Value="model.Password" InputType="InputType.Password" />
             </MudItem>*@
             <MudItem xs="12">
-                <InputText @bind-Value="model!.Username" class="form-control" placeholder />
+                <MudTextField Label="Username" For="@(() => model.Username)" @bind-Value="model.Username" />
+            </MudItem>
+            <MudItem xs="12">
+                <div class="mud-input-control mud-input-text-with-label mud-input-input-control">
+                <div class="mud-input-control-input-container">
+                    <div class="mud-input mud-input-text mud-input-text-with-label mud-input-underline mud-typography-input">
+                        <InputText @bind-Value="model!.Username" class="mud-input-slot mud-input-root mud-input-root-text" placeholder />
+                        <div class="mud-input-slot mud-input-root mud-input-root-text" style="display:none" tabindex="-1"></div>
+                    </div>
+                    <label class="mud-input-label mud-input-label-animated mud-input-label-text mud-input-label-inputcontrol" for="mudinputsmok7qbw">Username</label>
+                    </div>
+                </div>
             </MudItem>
             <MudItem xs="6" Class="d-flex justify-center">
                 <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Size="Size.Large" Class="mt-8">Login</MudButton>
@@ -29,7 +40,7 @@
             <MudItem xs="6" Class="d-flex justify-center">
                 <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Secondary" Size="Size.Large" Class="mt-8">Register</MudButton>
             </MudItem>
-        </MudGrid>
+        </MudGrid>www
     </EditForm>
 </MudContainer>
 
