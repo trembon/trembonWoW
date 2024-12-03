@@ -1,0 +1,40 @@
+﻿@rendermode InteractiveServer
+
+<MudPaper Class="py-3">
+    <MudNavMenu Bordered="true">
+        <MudText Typo="Typo.h6" Class="px-4">Welcome, @username</MudText>
+        <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary">Secondary Text</MudText>
+        <MudDivider Class="my-2" />
+        <MudNavLink Href="/" Icon="@Icons.Material.Filled.Diversity1">My Characters</MudNavLink>
+        <MudNavLink Href="/character/boost" Icon="@Icons.Material.Filled.AssistWalker">Boost character</MudNavLink>
+        <MudNavGroup Title="Account" Icon="@Icons.Material.Filled.ManageAccounts">
+            <MudNavLink Href="/account/change-password" Icon="@Icons.Material.Filled.Password">Change password</MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="Files" Icon="@Icons.Material.Filled.FilePresent">
+            <MudNavLink Href="/files/client" Icon="@Icons.Material.Filled.FileDownload">Client</MudNavLink>
+            <MudNavLink Href="/files/addons" Icon="@Icons.Material.Filled.DevicesOther">Addons</MudNavLink>
+        </MudNavGroup>
+        <MudNavLink Href="/account/logout" Icon="@Icons.Material.Filled.Logout">Logout</MudNavLink>
+    </MudNavMenu>
+</MudPaper>
+
+@code {
+    private string? username;
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (authenticationState is not null)
+        {
+            var authState = await authenticationState;
+            var user = authState?.User;
+
+            if (user?.Identity is not null && user.Identity.IsAuthenticated)
+            {
+                username = user.Identity?.Name?.ToLowerInvariant();
+            }
+        }
+    }
+}

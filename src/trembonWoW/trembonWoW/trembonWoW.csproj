@@ -15,4 +15,10 @@
     <PackageReference Include="MySqlConnector.DependencyInjection" Version="2.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Layouts\BaseLayout.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
+
 </Project>

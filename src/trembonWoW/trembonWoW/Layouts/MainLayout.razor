@@ -1,0 +1,20 @@
+﻿@inherits LayoutComponentBase
+@layout BaseLayout
+
+<MudContainer MaxWidth="MaxWidth.Large">
+    <MudContainer>
+        <MudText Align="Align.Center" GutterBottom="true">
+            <MudImage Height="250" Src="/images/world-of-warcraft-wrath-of-the-lich-king-logo.png" Alt="World of Warcraft: Wrath of the Lich King"></MudImage>
+        </MudText>
+        <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">trembon's WoW</MudText>
+    </MudContainer>
+
+    <MudGrid>
+        <MudItem xs="3">
+            <Navigation></Navigation>
+        </MudItem>
+        <MudItem xs="9">
+            @Body
+        </MudItem>
+    </MudGrid>
+</MudContainer>

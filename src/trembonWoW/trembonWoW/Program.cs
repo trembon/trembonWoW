@@ -5,9 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MudBlazor.Services;
 using MySqlConnector;
+using trembonWoW;
 using trembonWoW.Core.Authentication;
-using trembonWoW.Client.Pages;
-using trembonWoW.Components;
 using trembonWoW.Core.Connectors.Auth;
 using trembonWoW.Core.Connectors.Characters;
 

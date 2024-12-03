@@ -1,0 +1,15 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using trembonWoW.Core.Authentication
+
+@page "/account/logout"
+
+@inject NavigationManager NavigationManager
+@inject SignInManager<WoWUser> signInManager
+
+@code {
+    protected override void OnInitialized()
+    {
+        signInManager.SignOutAsync().Wait();
+        NavigationManager.NavigateTo("/", true);
+    }
+}
