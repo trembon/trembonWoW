@@ -7,9 +7,9 @@
 @inject SignInManager<WoWUser> signInManager
 
 @code {
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        signInManager.SignOutAsync().Wait();
-        NavigationManager.NavigateTo("/", true);
+        await signInManager.SignOutAsync();
+        NavigationManager.NavigateTo("/account/login", true);
     }
 }
