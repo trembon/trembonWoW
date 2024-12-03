@@ -17,7 +17,7 @@ public class AuthDatabase(MySqlConnection mysqlConnection) : IAuthDatabase
     {
         var parameters = new { username };
         var sql = "SELECT id,username,email,salt,verifier FROM account WHERE username = UPPER(@username)";
-        return await mysqlConnection.QuerySingleAsync<Account>(sql, parameters);
+        return await mysqlConnection.QuerySingleOrDefaultAsync<Account>(sql, parameters);
     }
 
     public async Task<Account?> GetAccountById(string id)

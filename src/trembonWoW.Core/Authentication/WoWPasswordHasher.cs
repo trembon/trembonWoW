@@ -27,8 +27,7 @@ namespace trembonWoW.Core.Authentication
 
             byte[] checkVerifier = CalculateSRP6Verifier(user.UserName, providedPassword, user.Salt);
 
-            byte[] verifier = Encoding.UTF8.GetBytes(hashedPassword);
-            return verifier.SequenceEqual(checkVerifier) ? PasswordVerificationResult.Success : PasswordVerificationResult.Failed;
+            return user.Verifier.SequenceEqual(checkVerifier) ? PasswordVerificationResult.Success : PasswordVerificationResult.Failed;
         }
 
         private static readonly BigInteger g = 7;

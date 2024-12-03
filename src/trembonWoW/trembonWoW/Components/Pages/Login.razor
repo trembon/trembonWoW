@@ -1,10 +1,11 @@
-﻿@attribute [AllowAnonymous]
-@using System.ComponentModel.DataAnnotations
+﻿@using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Identity
 @using trembonWoW.Core.Authentication
-@page "/account/login"
 
-@inject NavigationManager NavManager
+@page "/account/login"
+@attribute [AllowAnonymous]
+
+@inject NavigationManager navigation
 @inject SignInManager<WoWUser> signInManager
 
 <MudContainer Class="mt-16" MaxWidth="MaxWidth.Medium">
@@ -12,27 +13,35 @@
         <MudImage Height="250" Src="/images/world-of-warcraft-wrath-of-the-lich-king-logo.png" Alt="World of Warcraft: Wrath of the Lich King"></MudImage>
     </MudText>
     <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">trembon's WoW</MudText>
-    <EditForm OnSubmit="LoginForm" FormName="login" EditContext="editContext">
+    <EditForm OnValidSubmit="LoginForm" FormName="login" EditContext="editContext">
         <MudGrid Spacing="6" Justify="Justify.Center">
-            @*@<MudItem xs="12">
-                <MudTextField Label="Username" For="@(() => model.Username)" @bind-Value="model.Username" />
-            </MudItem>
-            <MudItem xs="12">
-                <MudTextField Label="Password" For="@(() => model.Password)" @bind-Value="model.Password" InputType="InputType.Password" />
-            </MudItem>*@
             <MudItem xs="8">
-                <MudTextField @bind-Value="model.Password" Label="Standard" Variant="Variant.Outlined"></MudTextField>
+                <div class="mud-input-control mud-input-text-with-label mud-input-input-control">
+                    <div class="mud-input-control-input-container">
+                        <div class="mud-input mud-input-text mud-input-text-with-label mud-input-underline mud-shrink mud-typography-input">
+                            <InputText @bind-Value="model!.Username" class="mud-input-slot mud-input-root mud-input-root-text" placeholder="Username" required />
+                        </div>
+                        <label class="mud-input-label mud-input-label-animated mud-input-label-text mud-input-label-inputcontrol">Username</label>
+                    </div>
+                </div>
             </MudItem>
             <MudItem xs="8">
                 <div class="mud-input-control mud-input-text-with-label mud-input-input-control">
-                <div class="mud-input-control-input-container">
-                    <div class="mud-input mud-input-text mud-input-text-with-label mud-input-underline mud-typography-input">
-                        <InputText @bind-Value="model!.Username" class="mud-input-slot mud-input-root mud-input-root-text" placeholder />
-                        <div class="mud-input-slot mud-input-root mud-input-root-text" style="display:none" tabindex="-1"></div>
-                    </div>
-                    <label class="mud-input-label mud-input-label-animated mud-input-label-text mud-input-label-inputcontrol" for="mudinputsmok7qbw">Username</label>
+                    <div class="mud-input-control-input-container">
+                        <div class="mud-input mud-input-text mud-input-text-with-label mud-input-underline mud-shrink mud-typography-input">
+                            <InputText @bind-Value="model!.Password" type="password" class="mud-input-slot mud-input-root mud-input-root-text" placeholder="Password" required />
+                        </div>
+                        <label class="mud-input-label mud-input-label-animated mud-input-label-text mud-input-label-inputcontrol">Password</label>
                     </div>
                 </div>
+            </MudItem>
+            <MudItem xs="8">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                @if (invalidLogin)
+                {
+                    <MudText Align="Align.Center" Color="Color.Error">Invalid login, please try again</MudText>
+                }
             </MudItem>
             <MudItem xs="6" Class="d-flex justify-center">
                 <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" Size="Size.Large" Class="mt-8">Login</MudButton>
@@ -49,8 +58,10 @@
     private InputModel? model { get; set; }
     private EditContext? editContext;
 
+    private bool invalidLogin = false;
+
     [SupplyParameterFromQuery]
-    private string? ReturnUrl { get; set; }
+    private string? returnUrl { get; set; }
 
     protected override void OnInitialized()
     {
@@ -63,20 +74,29 @@
         var result = await signInManager.PasswordSignInAsync(model.Username, model.Password, true, false);
         if (result.Succeeded)
         {
-            NavManager.NavigateTo(ReturnUrl ?? "/");
+            try
+            {
+                navigation.NavigateTo(returnUrl ?? "/");
+            }catch{ /* do nothing */ }
         }
         else
         {
             // TODO: show error
+            invalidLogin = true;
         }
     }
 
     private sealed class InputModel
     {
-        [Required]
+        [Required(ErrorMessage = "Username is required")]
+        [StringLength(32, ErrorMessage = "Username can not be longer than 16 characters")]
+        [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Username may only contain letters and numbers.")]
         public string Username { get; set; } = "";
 
-        [Required]
+        [Required(ErrorMessage = "Password is required")]
+        [StringLength(16, ErrorMessage = "Password can not be longer than 16 characters")]
+        [DataType(DataType.Password)]
+        [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Password may only contain letters and numbers.")]
         public string Password { get; set; } = "";
     }
 }

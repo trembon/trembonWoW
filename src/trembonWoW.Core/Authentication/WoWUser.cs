@@ -6,7 +6,8 @@ namespace trembonWoW.Core.Authentication
 {
     public class WoWUser : IdentityUser
     {
-        public byte[] Salt { get; set; }
+        public byte[] Salt { get; private set; }
+        public byte[] Verifier { get; private set; }
 
         public WoWUser(Account account)
         {
@@ -17,6 +18,7 @@ namespace trembonWoW.Core.Authentication
             NormalizedEmail = account.Email?.ToUpperInvariant();
             Salt = account.Salt;
             PasswordHash = Encoding.UTF8.GetString(account.Verifier);
+            Verifier = account.Verifier;
         }
     }
 }
