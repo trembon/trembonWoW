@@ -10,6 +10,6 @@
     protected override async Task OnInitializedAsync()
     {
         await signInManager.SignOutAsync();
-        NavigationManager.NavigateTo("/account/login", true);
+        NavigationManager.NavigateTo("/account/login?ReturnUrl=/", true);
     }
 }
