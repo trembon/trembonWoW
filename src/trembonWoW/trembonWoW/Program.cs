@@ -9,6 +9,7 @@ using trembonWoW.Core.Authentication;
 using trembonWoW.Client.Pages;
 using trembonWoW.Components;
 using trembonWoW.Core.Connectors.Auth;
+using trembonWoW.Core.Connectors.Characters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,8 +19,10 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents()
     .AddAuthenticationStateSerialization();
 
-builder.Services.AddMySqlDataSource(builder.Configuration.GetConnectionString("AuthDB")!);
+builder.Services.AddKeyedMySqlDataSource("auth", builder.Configuration.GetConnectionString("AuthDB")!);
+builder.Services.AddKeyedMySqlDataSource("characters", builder.Configuration.GetConnectionString("CharactersDB")!);
 builder.Services.AddTransient<IAuthDatabase, AuthDatabase>();
+builder.Services.AddTransient<ICharactersDatabase, CharactersDatabase>();
 
 builder.Services.AddMudServices();
 builder.Services.AddHttpContextAccessor();

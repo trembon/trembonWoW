@@ -1,6 +1,13 @@
-﻿@page "/"
-@using Microsoft.AspNetCore.Identity
+﻿@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+@using trembonWoW.Core.Connectors.Characters
+@using trembonWoW.Core.Connectors.Characters.Records
+
+@page "/"
 @attribute [Authorize]
+@rendermode InteractiveServer
+
+@inject ICharactersDatabase characterDatabase
 
 <PageTitle>Home</PageTitle>
 
@@ -8,4 +15,43 @@
 
 Welcome to your new app.
 
+<MudTable Items="@characters" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@isLoading" LoadingProgressColor="Color.Info">
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>Level</MudTh>
+        <MudTh>Race</MudTh>
+        <MudTh>Class</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Level">@context.Level</MudTd>
+        <MudTd DataLabel="Race">@context.Race</MudTd>
+        <MudTd DataLabel="Class">@context.Class</MudTd>
+    </RowTemplate>
+</MudTable>
+
 <MudButton Variant="Variant.Outlined" Href="/account/logout">Default</MudButton>
+
+@code{
+    private IEnumerable<Character> characters = [];
+    private bool isLoading = true;
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (authenticationState is not null)
+        {
+            var authState = await authenticationState;
+            var user = authState?.User;
+
+            if (user?.Identity is not null && user.Identity.IsAuthenticated)
+            {
+                var claim = user.FindFirst(ClaimTypes.NameIdentifier);
+                characters = await characterDatabase.GetCharacters(uint.Parse(claim?.Value ?? "0"));
+                isLoading = false;
+            }
+        }
+    }
+}
