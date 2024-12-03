@@ -9,9 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "trembonWoW.Client", "trembo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "trembonWoW.Core", "trembonWoW.Core\trembonWoW.Core.csproj", "{36193D7B-541F-43C9-8061-EF9CF1FAB80C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{24754EA5-8EBC-4D57-AB5F-9D0BF3853C75}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "files", "files", "{24754EA5-8EBC-4D57-AB5F-9D0BF3853C75}"
 	ProjectSection(SolutionItems) = preProject
 		..\.github\workflows\build.yml = ..\.github\workflows\build.yml
+		..\Dockerfile = ..\Dockerfile
 	EndProjectSection
 EndProject
 Global
