@@ -97,7 +97,7 @@
         [Required(ErrorMessage = "Password is required")]
         [StringLength(16, ErrorMessage = "Password can not be longer than 16 characters")]
         [DataType(DataType.Password)]
-        [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Password may only contain letters and numbers.")]
+        [RegularExpression(@"^[a-zA-Z0-9!]+$", ErrorMessage = "Password may only contain letters and numbers.")]
         public string Password { get; set; } = "";
     }
 }
