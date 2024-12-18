@@ -8,6 +8,7 @@ using MySqlConnector;
 using System.Text;
 using trembonWoW;
 using trembonWoW.Core.Authentication;
+using trembonWoW.Core.Authorization;
 using trembonWoW.Core.Connectors.Auth;
 using trembonWoW.Core.Connectors.Characters;
 using trembonWoW.Core.Connectors.RemoteAccess;
@@ -16,6 +17,8 @@ using trembonWoW.Pages.Files;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddEnvironmentVariables(prefix: "APP_");
+
+builder.Services.AddControllers();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -37,6 +40,8 @@ builder.Services.AddKeyedMySqlDataSource("characters", builder.Configuration.Get
 builder.Services.AddTransient<IAuthDatabase, AuthDatabase>();
 builder.Services.AddTransient<ICharactersDatabase, CharactersDatabase>();
 builder.Services.AddTransient<IRemoteAccessSoapAPI, RemoteAccessSoapAPI>();
+
+builder.Services.AddSingleton<ApiKeyAuthorizationFilter>();
 
 builder.Services.AddMudServices();
 builder.Services.AddHttpContextAccessor();
@@ -77,5 +82,6 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(trembonWoW.Client._Imports).Assembly);
+app.MapControllers();
 
 app.Run();
