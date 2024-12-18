@@ -5,10 +5,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MudBlazor.Services;
 using MySqlConnector;
+using System.Text;
 using trembonWoW;
 using trembonWoW.Core.Authentication;
 using trembonWoW.Core.Connectors.Auth;
 using trembonWoW.Core.Connectors.Characters;
+using trembonWoW.Core.Connectors.RemoteAccess;
+using trembonWoW.Pages.Files;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,10 +23,20 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents()
     .AddAuthenticationStateSerialization();
 
+builder.Services.AddHttpClient("soap", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["Soap:Url"]!);
+
+    var authenticationString = $"{builder.Configuration["Soap:Username"]}:{builder.Configuration["Soap:Password"]}";
+    var base64EncodedAuthenticationString = Convert.ToBase64String(Encoding.UTF8.GetBytes(authenticationString));
+    client.DefaultRequestHeaders.Add("Authorization", "Basic " + base64EncodedAuthenticationString);
+});
+
 builder.Services.AddKeyedMySqlDataSource("auth", builder.Configuration.GetConnectionString("AuthDB")!);
 builder.Services.AddKeyedMySqlDataSource("characters", builder.Configuration.GetConnectionString("CharactersDB")!);
 builder.Services.AddTransient<IAuthDatabase, AuthDatabase>();
 builder.Services.AddTransient<ICharactersDatabase, CharactersDatabase>();
+builder.Services.AddTransient<IRemoteAccessSoapAPI, RemoteAccessSoapAPI>();
 
 builder.Services.AddMudServices();
 builder.Services.AddHttpContextAccessor();
