@@ -9,6 +9,7 @@ using trembonWoW;
 using trembonWoW.Core.Authentication;
 using trembonWoW.Core.Connectors.Auth;
 using trembonWoW.Core.Connectors.Characters;
+using trembonWoW.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,9 @@ builder.Services.AddKeyedMySqlDataSource("auth", builder.Configuration.GetConnec
 builder.Services.AddKeyedMySqlDataSource("characters", builder.Configuration.GetConnectionString("CharactersDB")!);
 builder.Services.AddTransient<IAuthDatabase, AuthDatabase>();
 builder.Services.AddTransient<ICharactersDatabase, CharactersDatabase>();
+
+builder.Services.AddTransient<IAccountService, AccountService>();
+builder.Services.AddTransient<ICharacterService, CharacterService>();
 
 builder.Services.AddMudServices();
 builder.Services.AddHttpContextAccessor();
@@ -44,7 +48,6 @@ builder.Services.AddSingleton<IPasswordHasher<WoWUser>, WoWPasswordHasher>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();

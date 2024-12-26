@@ -73,7 +73,7 @@
 
     public async Task LoginForm()
     {
-        var result = await signInManager.PasswordSignInAsync(model.Username, model.Password, true, false);
+        var result = await signInManager.PasswordSignInAsync(model?.Username ?? "", model?.Password ?? "", true, false);
         if (result.Succeeded)
         {
             try

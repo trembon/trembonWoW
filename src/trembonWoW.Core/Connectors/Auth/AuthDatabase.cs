@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
-using trembonWoW.Core.Connectors.Auth.Models;
+using trembonWoW.Core.Connectors.Auth.Records;
 
 namespace trembonWoW.Core.Connectors.Auth;
 

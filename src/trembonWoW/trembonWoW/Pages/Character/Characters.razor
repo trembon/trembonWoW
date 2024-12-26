@@ -1,13 +1,13 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using System.Security.Claims
-@using trembonWoW.Core.Connectors.Characters
-@using trembonWoW.Core.Connectors.Characters.Records
+@using trembonWoW.Core.Models
+@using trembonWoW.Core.Services
 
 @page "/"
 @attribute [Authorize]
 @rendermode InteractiveServer
 
-@inject ICharactersDatabase characterDatabase
+@inject ICharacterService characterService
 
 <PageTitle>My Character</PageTitle>
 
@@ -43,7 +43,7 @@
             if (user?.Identity is not null && user.Identity.IsAuthenticated)
             {
                 var claim = user.FindFirst(ClaimTypes.NameIdentifier);
-                characters = await characterDatabase.GetCharacters(uint.Parse(claim?.Value ?? "0"));
+                characters = await characterService.GetAllForAccount(int.Parse(claim?.Value ?? "0"));
                 isLoading = false;
             }
         }

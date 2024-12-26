@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using trembonWoW.Core.Connectors.Auth;
+using trembonWoW.Core.Services;
 
 namespace trembonWoW.Core.Authentication
 {
-    public class WoWUserStore(IAuthDatabase authDatabase) : IUserStore<WoWUser>, IUserEmailStore<WoWUser>, IUserPasswordStore<WoWUser>
+    public class WoWUserStore(IAccountService accountService) : IUserStore<WoWUser>, IUserEmailStore<WoWUser>, IUserPasswordStore<WoWUser>
     {
         public Task<IdentityResult> CreateAsync(WoWUser user, CancellationToken cancellationToken)
         {
@@ -22,7 +22,7 @@ namespace trembonWoW.Core.Authentication
 
         public async Task<WoWUser?> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
-            var account = await authDatabase.GetAccountById(userId);
+            var account = await accountService.GetById(userId);
             if (account == null)
                 return null;
 
@@ -31,7 +31,7 @@ namespace trembonWoW.Core.Authentication
 
         public async Task<WoWUser?> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
-            var account = await authDatabase.GetAccount(normalizedUserName);
+            var account = await accountService.Get(normalizedUserName);
             if (account == null)
                 return null;
 

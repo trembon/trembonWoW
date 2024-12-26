@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Text;
-using trembonWoW.Core.Connectors.Auth.Models;
+using trembonWoW.Core.Connectors.Auth.Records;
 
 namespace trembonWoW.Core.Authentication
 {
