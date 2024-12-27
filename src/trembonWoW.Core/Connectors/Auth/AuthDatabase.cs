@@ -9,7 +9,7 @@ public interface IAuthDatabase
 {
     Task<Account?> GetAccount(string username);
 
-    Task<Account?> GetAccountById(string id);
+    Task<Account?> GetAccountById(uint id);
 }
 
 public class AuthDatabase([FromKeyedServices("auth")] MySqlConnection mysqlConnection) : IAuthDatabase
@@ -21,7 +21,7 @@ public class AuthDatabase([FromKeyedServices("auth")] MySqlConnection mysqlConne
         return await mysqlConnection.QuerySingleOrDefaultAsync<Account>(sql, parameters);
     }
 
-    public async Task<Account?> GetAccountById(string id)
+    public async Task<Account?> GetAccountById(uint id)
     {
         var parameters = new { id };
         var sql = "SELECT id,username,email,salt,verifier FROM account WHERE id = @id";

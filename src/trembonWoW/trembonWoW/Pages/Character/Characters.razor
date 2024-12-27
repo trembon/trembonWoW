@@ -35,17 +35,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (authenticationState is not null)
-        {
-            var authState = await authenticationState;
-            var user = authState?.User;
-
-            if (user?.Identity is not null && user.Identity.IsAuthenticated)
-            {
-                var claim = user.FindFirst(ClaimTypes.NameIdentifier);
-                characters = await characterService.GetAllForAccount(int.Parse(claim?.Value ?? "0"));
-                isLoading = false;
-            }
-        }
+        int? accountId = await authenticationState.GetClaimsValue(ClaimTypes.NameIdentifier, 0);
+        characters = await characterService.GetAllForAccount(accountId ?? 0);
+        isLoading = false;
     }
 }

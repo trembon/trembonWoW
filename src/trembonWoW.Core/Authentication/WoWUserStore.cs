@@ -22,7 +22,7 @@ namespace trembonWoW.Core.Authentication
 
         public async Task<WoWUser?> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
-            var account = await accountService.GetById(userId);
+            var account = await accountService.GetById(int.Parse(userId));
             if (account == null)
                 return null;
 

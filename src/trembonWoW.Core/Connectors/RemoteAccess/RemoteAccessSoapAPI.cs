@@ -15,6 +15,8 @@ namespace trembonWoW.Core.Connectors.RemoteAccess
     public interface IRemoteAccessSoapAPI
     {
         Task<ServerInfo?> GetServerInfo();
+
+        Task<bool> ChangeAccountPassword(string username, string newPassword);
     }
 
     public partial class RemoteAccessSoapAPI(IHttpClientFactory httpClientFactory) : IRemoteAccessSoapAPI
@@ -37,6 +39,15 @@ namespace trembonWoW.Core.Connectors.RemoteAccess
             var onlineMatch = ConnectedRegex().Match(data);
 
             return new ServerInfo(revMatch.Groups[1].Value, int.Parse(onlineMatch.Groups[1].Value));
+        }
+
+        // AC> account set password dev password password
+        // AC> The password was changed
+
+        public async Task<bool> ChangeAccountPassword(string username, string newPassword)
+        {
+            string? data = await ExecuteCommand($"account set password {username} {newPassword} {newPassword}");
+            return data?.StartsWith("The password was changed", StringComparison.InvariantCultureIgnoreCase) ?? false;
         }
 
         private async Task<string?> ExecuteCommand(string command)
@@ -62,7 +73,7 @@ namespace trembonWoW.Core.Connectors.RemoteAccess
             using StringWriter textWriter = new();
             using XmlWriter writer = XmlWriter.Create(textWriter);
             serializer.Serialize(writer, request);
-                
+
             return textWriter.ToString();
         }
 
