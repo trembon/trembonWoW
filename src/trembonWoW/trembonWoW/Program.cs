@@ -14,6 +14,7 @@ using trembonWoW.Core.Connectors.Characters;
 using trembonWoW.Core.Connectors.RemoteAccess;
 using trembonWoW.Pages.Files;
 using trembonWoW.Core.Services;
+using trembonWoW.Database.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +39,9 @@ builder.Services.AddHttpClient("soap", client =>
 
 builder.Services.AddKeyedMySqlDataSource("auth", builder.Configuration.GetConnectionString("AuthDB")!);
 builder.Services.AddKeyedMySqlDataSource("characters", builder.Configuration.GetConnectionString("CharactersDB")!);
+
+builder.Services.AddDefaultDatabaseContext(builder.Configuration.GetConnectionString("LocalDB")!);
+
 builder.Services.AddTransient<IAuthDatabase, AuthDatabase>();
 builder.Services.AddTransient<ICharactersDatabase, CharactersDatabase>();
 builder.Services.AddTransient<IRemoteAccessSoapAPI, RemoteAccessSoapAPI>();
@@ -76,6 +80,8 @@ else
 }
 
 app.UseAntiforgery();
+
+app.ApplyDatabaseMigrations();
 
 app.UseAuthentication();
 app.UseAuthorization();

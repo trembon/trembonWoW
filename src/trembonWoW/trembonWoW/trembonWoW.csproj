@@ -8,12 +8,18 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\trembonWoW.Core\trembonWoW.Core.csproj" />
+    <ProjectReference Include="..\..\trembonWoW.Database\trembonWoW.Database.csproj" />
     <ProjectReference Include="..\trembonWoW.Client\trembonWoW.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="9.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageReference Include="MudBlazor" Version="7.15.0" />
     <PackageReference Include="MySqlConnector.DependencyInjection" Version="2.4.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.2" />
   </ItemGroup>
 
   <ItemGroup>
