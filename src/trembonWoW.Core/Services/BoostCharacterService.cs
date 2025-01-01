@@ -17,6 +17,8 @@ public interface IBoostCharacterService
     Task<List<EligableBoost>> GetEligableBoosts(int accountId);
 
     Task<List<EligableCharacter>> GetEligableCharaceters(int accountId);
+
+    Task<bool> BoostCharacter(int accountId, int characterId, Guid boostTemplateId);
 }
 
 public class BoostCharacterService(DefaultContext defaultContext, IRemoteAccessSoapAPI remoteAccessSoapAPI, ICharacterService characterService) : IBoostCharacterService
@@ -37,15 +39,22 @@ public class BoostCharacterService(DefaultContext defaultContext, IRemoteAccessS
                 TemplateID = boost.ID,
                 Name = boost.Name,
                 Level = boost.SetToLevel,
+                Gold = boost.GoldToSend,
+                Teleport = $"{boost.TeleportToAlliance}/{boost.TeleportToHorde}",
                 IsEligable = true
             };
 
-            if (!usedBoosts.Any(x => x.BoostedAt > weekAgo))
+            if (boost.TeleportToAlliance.Equals(boost.TeleportToHorde, StringComparison.OrdinalIgnoreCase))
+            {
+               eligableBoost.Teleport = boost.TeleportToAlliance;
+            }
+
+            if (usedBoosts.Any(x => x.BoostedAt > weekAgo))
             {
                 eligableBoost.IsEligable = false;
                 eligableBoost.NotEligableReason = "Can only boost a character once a week";
             }
-            else if (!usedBoosts.Any(x => x.TemplateID == boost.ID && x.BoostedAt > monthAgo))
+            else if (usedBoosts.Any(x => x.TemplateID == boost.ID && x.BoostedAt > monthAgo))
             {
                 eligableBoost.IsEligable = false;
                 eligableBoost.NotEligableReason = "A specific boost can only be used once a month";
@@ -68,6 +77,7 @@ public class BoostCharacterService(DefaultContext defaultContext, IRemoteAccessS
                 CharacterID = character.ID,
                 Name = character.Name,
                 Race = character.Race,
+                Class = character.Class,
                 Level = character.Level,
                 IsEligable = true
             };
@@ -117,6 +127,17 @@ public class BoostCharacterService(DefaultContext defaultContext, IRemoteAccessS
         {
             teleport = await remoteAccessSoapAPI.TeleportCharacter(eligableCharacter.Name, boostTemplate.TeleportToHorde);
         }
+
+        var template = await defaultContext.BoostCharacterTemplate.FirstAsync(x => x.ID == boostTemplateId);
+        await defaultContext.BoostedCharacters.AddAsync(new Database.Entities.BoostedCharacters
+        {
+            AccountID = accountId,
+            CharacterID = characterId,
+            TemplateID = boostTemplateId,
+            Template = template,
+            BoostedAt = DateTime.UtcNow,
+        });
+        await defaultContext.SaveChangesAsync();
 
         return setLevel && sendMoney && teleport;
     }

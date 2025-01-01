@@ -15,6 +15,8 @@ public class EligableCharacter
 
     public Race Race { get; set; }
 
+    public Class Class { get; set; }
+
     public int Level { get; set; }
 
     public bool IsEligable { get; set; }

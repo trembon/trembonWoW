@@ -1,10 +1,105 @@
-﻿@page "/character/boost"
+﻿@using System.Security.Claims
+@using trembonWoW.Core.Models
+@using trembonWoW.Core.Services
+
+@page "/character/boost"
 @attribute [Authorize]
+@rendermode InteractiveServer
+
+@inject IBoostCharacterService boostCharacterService
 
 <PageTitle>Boost Character</PageTitle>
 
-<p>Nothing yet</p>
+<MudContainer MaxWidth="MaxWidth.Small">
+    @if (selectedBoost == null)
+    {
+        <MudText Typo="Typo.subtitle1" Align="Align.Center" Class="mb-5">Select which boost you want to apply to a character. You can only boost one character once a week.</MudText>
+
+        foreach(var boost in boosts)
+        {
+            <MudCard Class="mb-3">
+                <MudCardContent>
+                    <MudText>@boost.Name</MudText>
+                    <MudText Typo="Typo.body2">Level: @boost.Level<br/>Gold: @boost.Gold<br/>Teleport: @boost.Teleport</MudText>
+                    @if (!boost.IsEligable)
+                    {
+                        <MudText Typo="Typo.body2" Class="mt-3">Not eligable reason: @boost.NotEligableReason</MudText>
+                    }
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" Disabled="!boost.IsEligable" OnClick="() => SelectBoost(boost)">Select boost</MudButton>
+                </MudCardActions>
+            </MudCard>
+        }
+    }
+    else if(selectedCharacter == null)
+    {
+        <MudText Typo="Typo.subtitle1" Align="Align.Center" Class="mb-5">Select which character you want to boost.</MudText>
+
+        foreach (var character in characters)
+        {
+            <MudCard Class="mb-3">
+                <MudCardContent>
+                    <MudText>@character.Name</MudText>
+                    <MudText Typo="Typo.body2">Level: @character.Level<br />Race: @character.Race</MudText>
+                    @if (!character.IsEligable)
+                    {
+                        <MudText Typo="Typo.body2" Class="mt-3">Not eligable reason: @character.NotEligableReason</MudText>
+                    }
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" Disabled="!character.IsEligable" OnClick="async () => await BoostCharacterAction(character)">Boost character</MudButton>
+                </MudCardActions>
+            </MudCard>
+        }
+    }
+    else if(boostResult != null)
+    {
+        if (boostResult.Value)
+        {
+            <MudAlert Severity="Severity.Success">Character @selectedCharacter.Name has now been boosted to level @selectedBoost.Level and teleported.</MudAlert>
+        }
+        else
+        {
+            <MudAlert Severity="Severity.Error">Something went wrong, try again later!</MudAlert>
+        }
+    }
+</MudContainer>
 
 @code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
 
+    private IEnumerable<EligableBoost> boosts = [];
+    private IEnumerable<EligableCharacter> characters = [];
+
+    private EligableBoost? selectedBoost;
+    private EligableCharacter? selectedCharacter;
+    private bool? boostResult;
+
+    protected override async Task OnInitializedAsync()
+    {
+        selectedBoost = null;
+        selectedCharacter = null;
+        boostResult = null;
+
+        int? accountId = await authenticationState.GetClaimsValue(ClaimTypes.NameIdentifier, 0);
+        characters = await boostCharacterService.GetEligableCharaceters(accountId ?? 0);
+        boosts = await boostCharacterService.GetEligableBoosts(accountId ?? 0);
+    }
+
+    protected void SelectBoost(EligableBoost boost){
+        selectedBoost = boost;
+    }
+
+    protected async Task BoostCharacterAction(EligableCharacter character)
+    {
+        if (selectedBoost == null)
+            return;
+
+        selectedCharacter = character;
+
+        int? accountId = await authenticationState.GetClaimsValue(ClaimTypes.NameIdentifier, 0);
+        boostResult = await boostCharacterService.BoostCharacter(accountId ?? 0, character.CharacterID, selectedBoost.TemplateID);
+    }
 }
