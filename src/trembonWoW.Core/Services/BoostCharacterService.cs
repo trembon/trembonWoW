@@ -104,7 +104,9 @@ public class BoostCharacterService(DefaultContext defaultContext, IRemoteAccessS
         var boostTemplate = await defaultContext.BoostCharacterTemplate.FirstAsync(x => x.ID == boostTemplateId);
 
         bool setLevel = await remoteAccessSoapAPI.CharacterLevel(eligableCharacter.Name, boostTemplate.SetToLevel);
-        bool sendMoney = await remoteAccessSoapAPI.SendMoney(eligableCharacter.Name, boostTemplate.GoldToSend, BOOST_MONEY_SUBJECT, BOOST_MONEY_TEXT);
+
+        int goldAsCopper = boostTemplate.GoldToSend * 100 * 100;
+        bool sendMoney = await remoteAccessSoapAPI.SendMoney(eligableCharacter.Name, goldAsCopper, BOOST_MONEY_SUBJECT, BOOST_MONEY_TEXT);
 
         bool teleport = false;
         if (eligableCharacter.Race.IsAlliance())
