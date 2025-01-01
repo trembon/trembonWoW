@@ -10,6 +10,8 @@ public class BoostedCharacters
 {
     public Guid ID { get; set; }
 
+    public int AccountID { get; set; }
+
     public int CharacterID { get; set; }
 
     public Guid TemplateID { get; set; }

@@ -16,4 +16,8 @@
     <PackageReference Include="MySqlConnector" Version="2.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\trembonWoW.Database\trembonWoW.Database.csproj" />
+  </ItemGroup>
+
 </Project>

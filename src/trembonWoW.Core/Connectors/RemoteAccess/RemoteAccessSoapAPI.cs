@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection.Emit;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
@@ -17,6 +19,12 @@ namespace trembonWoW.Core.Connectors.RemoteAccess
         Task<ServerInfo?> GetServerInfo();
 
         Task<bool> ChangeAccountPassword(string username, string newPassword);
+
+        Task<bool> CharacterLevel(string characterName, int level);
+
+        Task<bool> TeleportCharacter(string characterName, string location);
+
+        Task<bool> SendMoney(string characterName, int amount, string subject, string text);
     }
 
     public partial class RemoteAccessSoapAPI(IHttpClientFactory httpClientFactory) : IRemoteAccessSoapAPI
@@ -49,6 +57,35 @@ namespace trembonWoW.Core.Connectors.RemoteAccess
             string? data = await ExecuteCommand($"account set password {username} {newPassword} {newPassword}");
             return data?.StartsWith("The password was changed", StringComparison.InvariantCultureIgnoreCase) ?? false;
         }
+
+        //AC> character level Brock 58
+        //AC> You changed level of Brock to 58.
+
+        public async Task<bool> CharacterLevel(string characterName, int level)
+        {
+            string? data = await ExecuteCommand($"character level {characterName} {level}");
+            return data?.Contains($"You changed level of {characterName} to {level}", StringComparison.InvariantCultureIgnoreCase) ?? false;
+        }
+
+
+        //AC> teleport name Brock stormwind
+        //AC> You are teleporting Brock(offline) to Stormwind.
+        public async Task<bool> TeleportCharacter(string characterName, string location)
+        {
+            string? data = await ExecuteCommand($"teleport name {characterName} {location}");
+            return data?.Contains($"You are teleporting {characterName}", StringComparison.InvariantCultureIgnoreCase) ?? false;
+        }
+
+
+        // AC> send money Brock "Boost money" "Money to get you started. Should cover class spell, mount and some gear on the auction house." 15000000
+        // AC> Mail sent to Brock
+
+        public async Task<bool> SendMoney(string characterName, int amount, string subject, string text)
+        {
+            string? data = await ExecuteCommand($"send money {characterName} \"{subject}\" \"{text}\" {amount}");
+            return data?.Contains($"Mail sent to {characterName}", StringComparison.InvariantCultureIgnoreCase) ?? false;
+        }
+
 
         private async Task<string?> ExecuteCommand(string command)
         {
