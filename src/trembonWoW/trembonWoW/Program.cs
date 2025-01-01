@@ -51,6 +51,7 @@ builder.Services.AddSingleton<ApiKeyAuthorizationFilter>();
 builder.Services.AddTransient<IServerService, ServerService>();
 builder.Services.AddTransient<IAccountService, AccountService>();
 builder.Services.AddTransient<ICharacterService, CharacterService>();
+builder.Services.AddTransient<IFileListingService, FileListingService>();
 builder.Services.AddTransient<IBoostCharacterService, BoostCharacterService>();
 
 builder.Services.AddMudServices();

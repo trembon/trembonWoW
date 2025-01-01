@@ -13,4 +13,6 @@ public class DefaultContext(DbContextOptions<DefaultContext> options) : DbContex
     public DbSet<BoostedCharacters> BoostedCharacters { get; set; }
 
     public DbSet<BoostCharacterTemplates> BoostCharacterTemplate { get; set; }
+
+    public DbSet<ListedFile> ListedFiles { get; set; }
 }

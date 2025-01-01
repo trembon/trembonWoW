@@ -1,10 +1,42 @@
-﻿@page "/files/client"
+﻿@using trembonWoW.Core.Services
+@using trembonWoW.Database.Entities
+
+@page "/files/client"
 @attribute [Authorize]
+
+@inject IFileListingService fileListingService
 
 <PageTitle>Files - Client</PageTitle>
 
-<p>Nothing yet</p>
+<MudTable Items="@files" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@isLoading" LoadingProgressColor="Color.Info">
+    <ColGroup>
+        <col style="width:50px;" />
+        <col />
+        <col />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh></MudTh>
+        <MudTh>Description</MudTh>
+        <MudTh>Filename</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Download">
+            <MudLink Href="@context.Url" Target="_blank">
+                <MudIcon Icon="@Icons.Material.Filled.Download" Title="Favorite" />
+            </MudLink>
+        </MudTd>
+        <MudTd DataLabel="Name">@context.Description</MudTd>
+        <MudTd DataLabel="Name">@context.Filename</MudTd>
+    </RowTemplate>
+</MudTable>
 
 @code {
+    private IEnumerable<ListedFile> files = [];
+    private bool isLoading = true;
 
+    protected override async Task OnInitializedAsync()
+    {
+        files = await fileListingService.GetFiles("client");
+        isLoading = false;
+    }
 }
