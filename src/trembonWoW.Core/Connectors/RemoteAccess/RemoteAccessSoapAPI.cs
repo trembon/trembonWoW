@@ -34,7 +34,7 @@ namespace trembonWoW.Core.Connectors.RemoteAccess
         [GeneratedRegex("rev\\. [a-z0-9+]* (\\d{4}-\\d{2}-\\d{2})", RegexOptions.IgnoreCase | RegexOptions.Multiline, "sv-SE")]
         private static partial Regex RevisionRegex();
 
-        [GeneratedRegex("Connected players: ([0-9]*)\\.", RegexOptions.IgnoreCase | RegexOptions.Multiline, "sv-SE")]
+        [GeneratedRegex("Connected players:[ \t]+([0-9]+)[ \t]*(?:\\.(?=\\s|$)|\\()", RegexOptions.IgnoreCase | RegexOptions.Multiline, "sv-SE")]
         private static partial Regex ConnectedRegex();
 
         public async Task<ServerInfo?> GetServerInfo()
@@ -43,10 +43,12 @@ namespace trembonWoW.Core.Connectors.RemoteAccess
             if (data == null)
                 return null;
 
-            var revMatch = RevisionRegex().Match(data);
             var onlineMatch = ConnectedRegex().Match(data);
+            if (!int.TryParse(onlineMatch.Groups[1].Value, out int playersConnected))
+                return null;
 
-            return new ServerInfo(revMatch.Groups[1].Value, int.Parse(onlineMatch.Groups[1].Value));
+            var revMatch = RevisionRegex().Match(data);
+            return new ServerInfo(revMatch.Groups[1].Value, playersConnected);
         }
 
         // AC> account set password dev password password
